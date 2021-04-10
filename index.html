@@ -1,0 +1,119 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="node_modules/xterm/css/xterm.css" />
+  <script src="node_modules/xterm/lib/xterm.js"></script>
+  <script src="node_modules/xterm-addon-unicode11/lib/xterm-addon-unicode11.js"></script>
+  <script src="node_modules/xterm-addon-fit/lib/xterm-addon-fit.js"></script>
+  <style>
+    body {
+      background-color: #191919;
+      margin: 0px;
+      padding: 5px;
+      overflow: hidden;
+      /* 
+              margin:0px;
+                padding:0px; */
+    }
+
+    /* .xterm-screen{
+            height:100% !important;
+          } */
+    #terminal {
+      height: 100% !important;
+      display: none;
+    }
+
+    #connpan {
+      position: absolute;
+      margin: -60px 0 0 -130px;
+      z-index: 1;
+      width: 260px;
+      height: 120px;
+      background-color: #E0E0E0;
+      border-radius: 9px;
+      left: 50%;
+      top: 50%;
+      padding: 15px;
+    }
+
+    input {
+      -webkit-appearance: none;
+      border: none;
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 15px;
+      background-color: rgba(0, 0, 0, 0.2);
+      width: 100%;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="connpan">
+    <span style="width:100%;">Connect to voidshell</span>
+    <div style="height:20px;"></div>
+    <input id="wsspath" type="text" placeholder="wss://"
+      onblur="document.documentElement.scrollTop=0;document.documentElement.scrollLeft=0;" />
+    <input id="conn" type="button" value="Connect" onclick="conn();"
+      style="background-color:#0080FF;margin-top:10px;height:35px;" />
+  </div>
+  <script>
+    function conn(){
+      document.querySelector("#terminal").style.display="block";
+      document.querySelector("#connpan").style.display="none";
+      connect(document.querySelector("#wsspath").value)
+    }
+  </script>
+
+  <div id="terminal"></div>
+  <script>
+    var conn;
+    var term = new Terminal({
+      fontFamily: 'Menlo, Monaco, \'Courier New\', monospace', fontSize: 14,
+      cursorBlink: true,
+    });
+    term.setOption('theme', {
+      background: '#191919',
+    })
+    const unicode11Addon = new Unicode11Addon.Unicode11Addon();
+    const fitAddon = new FitAddon.FitAddon();
+    term.loadAddon(fitAddon);
+    window.onresize = () => {
+      fitAddon.fit()
+    }
+    window.onload = () => {
+      fitAddon.fit()
+    }
+    //term.onRender(()=>fitAddon.fit())
+    //Load XTerm Unicode Addon
+    term.loadAddon(unicode11Addon)
+    term.unicode.activeVersion = '11'
+    //////////////////////////
+    term.open(document.getElementById('terminal'));
+
+    term.onData((s) => { conn.send(s) })
+
+    function connect(path) {
+      term.write('connecting to voidshell...\n\n\r')
+      try { conn.close() } catch (e) { }
+      conn = new WebSocket(path)
+      conn.onerror = () => {
+        term.write("connection error\r")
+      }
+      conn.onmessage = (m) => {
+        m.data.text().then(text => {
+          term.write(text)
+        })
+      }
+      conn.onclose = () => {
+        term.write("\r\n\r\n\033[31;1mdisconnected\033[0m\r\n\r\n\r\n")
+        //connect()
+      }
+    }
+    //connect("wss://test.void.net:9001/")
+  </script>
+</body>
+
+</html>
