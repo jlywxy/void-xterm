@@ -11,14 +11,7 @@
       margin: 0px;
       padding: 5px;
       overflow: hidden;
-      /* 
-              margin:0px;
-                padding:0px; */
     }
-
-    /* .xterm-screen{
-            height:100% !important;
-          } */
     #terminal {
       height: 100% !important;
       display: none;
@@ -60,6 +53,7 @@
       style="background-color:#0080FF;margin-top:10px;height:35px;" />
   </div>
   <script>
+    document.querySelector("#wsspath").value="wss://jlywxy.top:9001/"
     function conn(){
       document.querySelector("#terminal").style.display="block";
       document.querySelector("#connpan").style.display="none";
