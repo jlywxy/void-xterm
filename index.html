@@ -95,7 +95,6 @@
       term.write('connecting to voidshell...\n\n\r')
       try { conn.close() } catch (e) { }
       conn = new WebSocket(path)
-      fitAddon.fit()
       conn.onerror = () => {
         term.write("connection error\r")
       }
@@ -109,6 +108,9 @@
         //connect()
       }
     }
+    setInterval(()=>{
+      fitAddon.fit()
+    },3000)
     //connect("wss://test.void.net:9001/")
   </script>
 </body>
