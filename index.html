@@ -95,6 +95,7 @@
       term.write('connecting to voidshell...\n\n\r')
       try { conn.close() } catch (e) { }
       conn = new WebSocket(path)
+      fitAddon.fit()
       conn.onerror = () => {
         term.write("connection error\r")
       }
